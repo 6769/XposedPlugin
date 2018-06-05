@@ -1,6 +1,7 @@
-package org.pip.hookTest;
+package org.hookTest;
 
 import android.graphics.Color;
+import android.util.Log;
 import android.widget.TextView;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -10,28 +11,33 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class Tutorial implements IXposedHookLoadPackage {
+    private static final String TAGETPKG="com.a.multicheck";
+    private static final String TAG="HOOKTEST";
+
+
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
 
-        XposedBridge.log("Loaded app:" + lpparam.packageName);
-        if (!lpparam.packageName.equals("com.android.systemui"))
+
+        if (!lpparam.packageName.equals(TAGETPKG))
             return;
+        XposedBridge.log("Loaded app:" + lpparam.packageName);
 
-
-        findAndHookMethod("com.android.systemui.statusbar.policy.Clock",
+        findAndHookMethod("com.a.Check",
                 lpparam.classLoader,
-                "updateClock",
+                "check",
+                String.class,
                 new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 // this will be called before the clock was updated by the original method
+                String input=(String) param.args[0];
+                XposedBridge.log( input);
             }
+
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 // this will be called after the clock was updated by the original method
-                TextView tv = (TextView) param.thisObject;
-                String text = tv.getText().toString();
-                tv.setText(text);
-                tv.setTextColor(Color.GREEN);
+                param.setResult(true);
             }
         });
     }

@@ -1,38 +1,40 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 25
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
-        applicationId "org.pip.hook"
-        minSdkVersion 23
-        targetSdkVersion 23
+        applicationId "org.hook"
+        minSdkVersion 15
+        targetSdkVersion 25
         versionCode 1
         versionName getTime("yyMMdd.hhmm")
+        resConfigs "zh"
     }
     buildTypes {
-        defaultConfig {
-
-            resConfigs "en","zh"
-
-        }
-        debug{
-
-        }
         release {
-            shrinkResources true
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+            shrinkResources false
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${applicationId}.${variant.name}-${variant.versionName}.apk"
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
-    provided 'de.robv.android.xposed:api:82'
-    provided 'de.robv.android.xposed:api:82:sources'
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.2.0'
+    compileOnly 'de.robv.android.xposed:api:82'
+    //compileOnly 'de.robv.android.xposed:api:82:sources'
+    //testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:25.3.0'
 }
 
 def getTime(String fmt){
